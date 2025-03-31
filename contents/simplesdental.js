@@ -40,14 +40,27 @@ async function confirmation(){
             //consulta-status5 - Cancelado pelo profissional
             //consulta-status1 - Confirmado
             //consulta-status4 - aguardando
-            var status = [""];
+        }
+
+        var status = ["consulta-status1", "consulta-status4", "consulta-status5", "consulta-status6"];
+        
+        var statusOn = false;
+
+        for(let i = 0; i < status.length; i++){
+            if(element.classList.contains(status[i])){
+                statusOn = true;
+            }
+        }
+
+        if(statusOn){
+            continue;
         }
         
         element.click();
 
         var background = document.querySelector(".preview-backdrop");
 
-        await sleep(800);
+        await sleep(1000);
 
         var cardName = document.querySelector(".mat-mdc-card-header-text .mat-mdc-tooltip-trigger").innerText;
         var cardPhone = document.querySelector(".mat-mdc-card-header-text .mat-mdc-card-subtitle").innerText;
@@ -68,6 +81,7 @@ async function confirmation(){
     }
 
     chrome.storage.local.clear();
+    console.log("FINALIZOU AS MENSAGENS");
 }
 
 async function sendWhatsapp(cardName, cardPhone, cardDr, cardHour){
