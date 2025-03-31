@@ -1,0 +1,25 @@
+{
+    "manifest_version": 3,
+    "name": "Espaço Sorriso",
+    "description": "Extensão responsável por realizar a confirmação de pacientes.",
+    "version": "1.0.0",
+    "permissions": [
+        "scripting",
+        "tabs",
+        "storage",
+        "activeTab"
+    ],
+    "host_permissions": [
+        "https://app.simplesdental.com/*",
+        "https://web.whatsapp.com/*"
+    ],
+    "action": {
+        "default_popup": "popup/popup.html",
+        "default_icon": {
+            "128": "popup/src/img/icon.png"
+        }
+    },
+    "background": {
+        "service_worker": "backgrounds/background.js"
+    }
+}
