@@ -1,21 +1,26 @@
 var day = document.querySelector(".weekday");
 var dayString = day.innerText.trim();
+
 if(dayString == "Sáb."){
-    nextDay();
+    lastDay(2);
 }else{
-    var nextDayBtn = document.querySelector("[data-testid='btnProximoPeriodo']");
-    nextDayBtn.click();
-    confirmation();
+    lastDay(1);
 }
 
-function nextDay(){
-    var nextDayBtn = document.querySelector("[data-testid='btnProximoPeriodo']");
-    nextDayBtn.click();
-    setTimeout(() => {
-        nextDayBtn = document.querySelector("[data-testid='btnProximoPeriodo']");
+function lastDay(days){
+    if(days == 1){
+        var nextDayBtn = document.querySelector("[data-testid='btnProximoPeriodo']");
         nextDayBtn.click();
         confirmation();
-    }, 2000);
+    }else if(days == 2){
+        var nextDayBtn = document.querySelector("[data-testid='btnProximoPeriodo']");
+        nextDayBtn.click();
+        setTimeout(() => {
+            nextDayBtn = document.querySelector("[data-testid='btnProximoPeriodo']");
+            nextDayBtn.click();
+            confirmation();
+        }, 2000);
+    }
 }
 
 function sleep(ms) {
@@ -23,16 +28,20 @@ function sleep(ms) {
 }
 
 async function confirmation(){
-    await sleep(2000);
+    await sleep(4000);
     var allHours = document.querySelectorAll(".fc-event-draggable");
     console.log(allHours);
     for(let element of allHours){
-        await sleep(300);
+        
+        if(element.classList.contains("compromisso")){
+            continue;
+        }
         
         element.click();
+
         var background = document.querySelector(".preview-backdrop");
 
-        await sleep(300);
+        await sleep(800);
 
         var cardName = document.querySelector(".mat-mdc-card-header-text .mat-mdc-tooltip-trigger").innerText;
         var cardPhone = document.querySelector(".mat-mdc-card-header-text .mat-mdc-card-subtitle").innerText;
@@ -40,18 +49,20 @@ async function confirmation(){
         var cardHour = document.querySelectorAll(".mat-mdc-card-content .mat-mdc-tooltip-trigger")[3].querySelector("span").innerText;
         console.log(cardName, cardPhone, cardDr, cardHour);
 
-        await sleep(300);
+        await sleep(500);
 
         document.querySelectorAll(".preview-row")[2].querySelector(".mat-select-trigger").click();
 
-        await sleep(300);
+        await sleep(500);
         
         document.querySelectorAll(".mat-select-panel .mat-option-text")[7].click();
 
-        await sleep(300);
+        await sleep(500);
         background.click();
         await sendWhatsapp(cardName, cardPhone, cardDr, cardHour);
     }
+
+    chrome.storage.local.clear();
 }
 
 async function sendWhatsapp(cardName, cardPhone, cardDr, cardHour){

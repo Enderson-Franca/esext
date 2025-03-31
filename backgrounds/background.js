@@ -54,8 +54,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                         target: {tabId: id.id},
                         files: ["contents/whatsapp.js"]
                     }).then(() => {
-                        chrome.runtime.sendMessage({action: "send"}, (response) => {
-                            console.log(response);
+                        chrome.tabs.sendMessage(tabId, {action: "send"}, (response) => {
+                            sendResponse(response);
                             chrome.storage.local.get("whatsappTabId", (result) => {
                                 chrome.tabs.remove(result["whatsappTabId"]);
                             });
