@@ -35,7 +35,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             hour = hour.split("-");
             hour = hour[0];
             var dr = message.dr;
-            var messageBase = 'Olá {name}, é aqui da clínica Espaço Sorriso. O motivo do meu contato é para confirmar a sua consulta com o(a) {dr} amanhã dia {data} às {hour}.';
+            /*var messageBase = 'Olá {name}, é aqui da clínica Espaço Sorriso. O motivo do meu contato é para confirmar a sua consulta com o(a) {dr} amanhã dia {data} às {hour}.';*/
+            var messageBase = `Bom dia {name}, é daqui da Clinica Espaço Sorriso! O motivo do contato e para confirmar sua consulta com o(a) {dr} amanhã dia {data} às {hour}?
+⚠ Observações
+* A tolerância de atrasos é de 10 minutos.
+* Caso não compareça e não desmarque com 2 horas de antecedência sera gerada uma multa no valor de 20,00. (pois há reserva de horarios)
+* *Aguardamos o seu retorno até 11:00, caso não seja confirmado destinaremos o horário para outro paciente.
+
+
+SUA CONFIRMAÇÃO É DE EXTREMA IMPORTÂNCIA`;
             messageBase =  messageBase.replaceAll("{name}", name)
             .replaceAll("{dr}", dr)
             .replaceAll("{data}", data)
@@ -66,6 +74,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                     chrome.storage.local.set({whatsappTabId: id.id});
                 }
             });
+
+            return true;
         break;
         case "forSimplesDental":
 

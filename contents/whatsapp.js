@@ -10,7 +10,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
                         setTimeout(() => {
                             sendResponse({success: true});
-                        }, 2000);
+                        }, 4000);
                     }, 500); 
                 }
             }, 1000);

@@ -35,6 +35,12 @@ async function confirmation(){
         
         if(element.classList.contains("compromisso")){
             continue;
+            //consulta-status0 - agendado
+            //consulta-status6 - Cancelado pelo paciente
+            //consulta-status5 - Cancelado pelo profissional
+            //consulta-status1 - Confirmado
+            //consulta-status4 - aguardando
+            var status = [""];
         }
         
         element.click();
@@ -47,7 +53,6 @@ async function confirmation(){
         var cardPhone = document.querySelector(".mat-mdc-card-header-text .mat-mdc-card-subtitle").innerText;
         var cardDr = document.querySelectorAll(".mat-mdc-card-content .mat-mdc-tooltip-trigger")[0].innerText;
         var cardHour = document.querySelectorAll(".mat-mdc-card-content .mat-mdc-tooltip-trigger")[3].querySelector("span").innerText;
-        console.log(cardName, cardPhone, cardDr, cardHour);
 
         await sleep(500);
 
