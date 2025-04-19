@@ -1,31 +1,108 @@
-var day = document.querySelector(".weekday");
-var dayString = day.innerText.trim();
+const now = new Date();
 
-if(dayString == "Sáb."){
-    lastDay(2);
-}else{
-    lastDay(1);
-}
+const day = now.getDate();
+const month = now.getMonth() + 1;
+const year = now.getFullYear();
 
-function lastDay(days){
-    if(days == 1){
-        var nextDayBtn = document.querySelector("[data-testid='btnProximoPeriodo']");
-        nextDayBtn.click();
-        confirmation();
-    }else if(days == 2){
-        var nextDayBtn = document.querySelector("[data-testid='btnProximoPeriodo']");
-        nextDayBtn.click();
-        setTimeout(() => {
-            nextDayBtn = document.querySelector("[data-testid='btnProximoPeriodo']");
-            nextDayBtn.click();
-            confirmation();
-        }, 2000);
-    }
-}
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+(async () => {
+    var profissional = document.querySelector(".ng-tns-c3082329526-6");
+    var profissionalText = profissional.innerText.trim();
+
+    var cadeira = document.querySelector(".ng-tns-c3082329526-8");
+    var cadeiraText = cadeira.innerText.trim();
+
+    var type = document.querySelector(".ng-tns-c3082329526-3");
+    var typeText = document.querySelector(".ng-tns-c3082329526-3").innerText.trim();
+
+    function verifyReady(item){
+        if(item.length > 0){
+            console.log(item);
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    await sleep(8000);
+
+    if(profissionalText !== "Todos os profissionais"){
+        profissional.click();
+
+        while(true){
+            var optionClick = document.querySelectorAll(".mat-option-text");
+            if(await verifyReady(optionClick)){
+                await sleep(500);
+                optionClick[0].click();
+                console.log("finalizou");
+                break;
+            }
+        
+            console.log("zaa");
+
+            await sleep(200);
+        }
+        await sleep(1000);
+    }
+
+
+    if(cadeiraText !== "Todas as cadeiras"){
+        cadeira.click();
+        while(true){
+            var optionClick = document.querySelectorAll(".mat-option-text");
+            if(await verifyReady(optionClick)){
+                await sleep(500);
+                optionClick[0].click();
+                console.log("finalizou");
+                break;
+            }
+
+            await sleep(200);
+        }
+        await sleep(1000);
+    }
+
+
+    if(typeText !== "Dia"){
+        type.click();
+        while(true){
+            var optionClick = document.querySelectorAll(".mat-option-text");
+            if(await verifyReady(optionClick)){
+                await sleep(500);
+                optionClick[1].click();
+                console.log("finalizou");
+                break;
+            }
+
+            await sleep(200);
+        }
+        await sleep(1000);
+    }
+
+
+    /*Navegar entre os dias até a data escolhida*/
+    /*
+    var nextDayBtn = document.querySelector("[data-testid='btnProximoPeriodo']");
+    
+    while(true){
+        var daySimples = document.querySelector(".header-agenda-group span:nth-child(1)").innerText.trim();
+        if(daySimples == 25){
+            console.log("Dia correto");
+            break;
+        }else{
+            nextDayBtn.click();
+            console.log(daySimples);
+        }
+        await sleep(200);
+    }
+    */
+
+    confirmation();
+})();
 
 async function confirmation(){
     await sleep(4000);
@@ -80,7 +157,6 @@ async function confirmation(){
         await sendWhatsapp(cardName, cardPhone, cardDr, cardHour);
     }
 
-    chrome.storage.local.clear();
     console.log("FINALIZOU AS MENSAGENS");
 }
 

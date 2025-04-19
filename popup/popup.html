@@ -11,14 +11,54 @@
             <img src="src/img/logo.png"/>
         </header>
         <main class="principal">
-            <div class="btn-confirm">
-                <input type="button" value="Confirmar pacientes">
+            <div class="interface-config">
+                <div class="actions">
+                    <div class="actions__absolute">
+                        <div class="actions__input">
+                            <label>Confirmação ou Cancelamento?</label>
+                            <select class="actions__values">
+                                <option selected value="true">Confirmação</option>
+                                <option value="false">Cancelamento</option>
+                            </select>
+                        </div>
+                        <div class="actions__input">
+                            <label>Tipo de mensagem</label>
+                            <select  class="actions__values">
+                                <option selected disabled>Selecione</option>
+                                <option>Clínico</option>
+                                <option>Ortodôntico</option>
+                                <option>Confirmação do dia</option>
+                            </select>
+                        </div>
+                        <div class="actions__input">
+                            <label>Doutor(a)</label>
+                            <select disabled class="actions__values">
+                                <option selected disabled>Selecione</option>
+                                <option>Todos</option>
+                                <option>Jessica</option>
+                                <option>Hiley</option>
+                                <option>Hedione</option>
+                            </select>
+                        </div>
+                        <div class="actions__input">
+                            <label>Data para esta ação</label>
+                            <input type="date" class="actions__values">
+                        </div>
+                        <div class="actions__input">
+                            <label>Mensagem a ser enviada</label>
+                            <textarea placeholder="Mensagem que será enviada aos pacientes." class="actions__values"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-confirm">
+                    <input type="button" value="Confirmar pacientes">
+                </div>
             </div>
             <div class="loading">
                 <div class="loading__info">
                     <img src="src/img/loading.svg"/>
                     <span>
-                        Confirmando pacientes, aguarde!
+                        Enviando mensagem aos pacientes. Aguarde!
                     </span>
                 </div>
                 <div class="btn-cancel">
