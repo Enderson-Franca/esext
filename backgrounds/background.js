@@ -34,30 +34,76 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             });
         break;
         case "forWhatsapp":
-            console.log("FOR WHATSAAO");
-            var id;
-            chrome.tabs.create({url: "https://web.whatsapp.com/send?phone=55610000000&text=Vejamos......"}, (tab) => {
-                id = tab;
-            });
+            (async () => {
+                console.log("FOR WHATSAAO");
+                var id;
+                //Dados vindos do formulário
+                var informations = await chrome.storage.local.get("informations");
+                informations = informations["informations"];
+                var type = informations["type"];
+                var doctor = informations["doctor"];
+                var date = informations["date"];
+                var messageBase = informations["message"];
 
-            chrome.tabs.onUpdated.addListener(function listener(tabId, changeInfo){
-                if(tabId == id.id && changeInfo.status == "complete"){
-                    chrome.scripting.executeScript({
-                        target: {tabId: id.id},
-                        files: ["contents/whatsapp.js"]
-                    }).then(() => {
-                        chrome.tabs.sendMessage(tabId, {action: "send"}, (response) => {
-                            sendResponse(response);
-                            chrome.storage.local.get("whatsappTabId", (result) => {
-                                chrome.tabs.remove(result["whatsappTabId"]);
+                //dados vindos da simples dental
+                var name = message.name;
+                var dr = message.dr;
+                var hour = message.hour;
+                hour = hour.replace(" ", "");
+                hour = hour.split("-");
+                hour = hour[0];
+                var dateConsulta = message.date;
+                var phone = message.phone.replace(/\D/g, "");
+
+                switch(type){
+                    case "clinical":
+                        var messageBase = messageBase
+                        .replace("{name}", name)
+                        .replace("{dr}", dr)
+                        .replace("{hour}", hour)
+                        .replace("{data}", dateConsulta);
+                    break;
+                    case "orthodontics":
+                        var messageBase = messageBase
+                        .replace("{name}", name)
+                        .replace("{dr}", dr)
+                        .replace("{hour}", hour)
+                        .replace("{data}", dateConsulta);
+                    break;
+                    case "today":
+                        var messageBase = messageBase
+                        .replace("{name}", name)
+                        .replace("{hour}", hour);
+                    break;
+                }
+
+                messageBase = encodeURIComponent(messageBase);
+
+                var linkBase = `https://web.whatsapp.com/send?phone=${phone}&text=${messageBase}`;
+
+                chrome.tabs.create({url: linkBase}, (tab) => {
+                    id = tab;
+                });
+
+                chrome.tabs.onUpdated.addListener(function listener(tabId, changeInfo){
+                    if(tabId == id.id && changeInfo.status == "complete"){
+                        chrome.scripting.executeScript({
+                            target: {tabId: id.id},
+                            files: ["contents/whatsapp.js"]
+                        }).then(() => {
+                            chrome.tabs.sendMessage(tabId, {action: "send"}, (response) => {
+                                sendResponse(response);
+                                chrome.storage.local.get("whatsappTabId", (result) => {
+                                    chrome.tabs.remove(result["whatsappTabId"]);
+                                });
                             });
                         });
-                    });
 
-                    chrome.tabs.onUpdated.removeListener(listener);
-                    chrome.storage.local.set({whatsappTabId: id.id});
-                }
-            });
+                        chrome.tabs.onUpdated.removeListener(listener);
+                        chrome.storage.local.set({whatsappTabId: id.id});
+                    }
+                });
+            })();
         break;
         case "log":
             console.log(message.message);
@@ -76,14 +122,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             var id;
             var linkBase = "https://web.whatsapp.com/send?phone=55{phone}&text={message}";
             var name = message.name;
-            var phone = message.phone.replace(/\D/g, "");
+            var phone = 
             var data = new Date();
             data.setDate(data.getDate() + 1);
             data = data.toLocaleDateString("pt-BR");
-            var hour = message.hour;
-            var hour = hour.replace(" ", "");
-            hour = hour.split("-");
-            hour = hour[0];
+            c
             var dr = message.dr;
             messageBase =  messageBase.replaceAll("{name}", name)
             .replaceAll("{dr}", dr)

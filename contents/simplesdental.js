@@ -10,33 +10,40 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-(async () => {
-    var profissional = document.querySelector(".ng-tns-c3082329526-6");
-    var profissionalText = profissional.innerText.trim();
-
-    var cadeira = document.querySelector(".ng-tns-c3082329526-8");
-    var cadeiraText = cadeira.innerText.trim();
-
-    var type = document.querySelector(".ng-tns-c3082329526-3");
-    var typeText = document.querySelector(".ng-tns-c3082329526-3").innerText.trim();
-
-    function verifyReady(item){
-        if(item.length > 0){
-            console.log(item);
-            return true;
-        }else{
-            return false;
-        }
+function verifyIsItem(item){
+    if(item){
+        return true;
+    }else{
+        return false;
     }
+}
 
-    await sleep(2000);
+function verifyIsList(list){
+    if(list.length > 0){
+        return true;
+    }else{
+        return false;
+    }
+}
+
+(async () => {
+    while(true){
+        var profissional = document.querySelector(".ng-tns-c3082329526-6");
+        if(await verifyIsItem(profissional)){
+            break;
+        }
+        
+        await sleep(10);
+    }
+    
+    var profissionalText = profissional.innerText.trim();
 
     if(profissionalText !== "Todos os profissionais"){
         profissional.click();
 
         while(true){
             var optionClick = document.querySelectorAll(".mat-option-text");
-            if(await verifyReady(optionClick)){
+            if(await verifyIsList(optionClick)){
                 await sleep(500);
                 optionClick[0].click();
                 console.log("finalizou");
@@ -44,15 +51,28 @@ function sleep(ms) {
             }
             await sleep(200);
         }
+
         await sleep(1000);
     }
 
+    
+    while(true){
+        var cadeira = document.querySelector(".ng-tns-c3082329526-8");
+        if(await verifyIsItem(cadeira)){
+            break;
+        }
+        
+        await sleep(10);
+    }
+    
+    
+    var cadeiraText = cadeira.innerText.trim();
 
     if(cadeiraText !== "Todas as cadeiras"){
         cadeira.click();
         while(true){
             var optionClick = document.querySelectorAll(".mat-option-text");
-            if(await verifyReady(optionClick)){
+            if(await verifyIsList(optionClick)){
                 await sleep(500);
                 optionClick[0].click();
                 console.log("finalizou");
@@ -64,12 +84,23 @@ function sleep(ms) {
         await sleep(1000);
     }
 
+    while(true){
+        var type = document.querySelector(".ng-tns-c3082329526-3");
+        if(await verifyIsItem(type)){
+            break;
+        }
+        
+        await sleep(10);
+    }
+    
+    
+    var typeText = document.querySelector(".ng-tns-c3082329526-3").innerText.trim();
 
     if(typeText !== "Dia"){
         type.click();
         while(true){
             var optionClick = document.querySelectorAll(".mat-option-text");
-            if(await verifyReady(optionClick)){
+            if(await verifyIsList(optionClick)){
                 await sleep(500);
                 optionClick[1].click();
                 console.log("finalizou");
@@ -113,9 +144,16 @@ function sleep(ms) {
 })();
 
 async function confirmation(){
-    await sleep(4000);
-    var allHours = document.querySelectorAll("[data-consulta-id]");
-    console.log(allHours);
+    
+    while(true){
+        var allHours = document.querySelectorAll("[data-consulta-id]");
+        if(await verifyIsList(allHours)){
+            break;
+        }
+
+        await sleep(10);
+    }
+
     for(let element of allHours){
         
         if(element.classList.contains("compromisso")){
@@ -148,22 +186,46 @@ async function confirmation(){
 
         await sleep(1000);
 
-        var cardName = document.querySelector(".mat-mdc-card-header-text .mat-mdc-tooltip-trigger").innerText;
+        while(true){
+            var cardName = document.querySelector(".mat-mdc-card-header-text .mat-mdc-tooltip-trigger").innerText;
+            if(await verifyIsItem(cardName)){
+                break;
+            }
+            
+            await sleep(10);
+        }
+
         var cardPhone = document.querySelector(".mat-mdc-card-header-text .mat-mdc-card-subtitle").innerText;
         var cardDr = document.querySelectorAll(".mat-mdc-card-content .mat-mdc-tooltip-trigger")[0].innerText;
         var cardHour = document.querySelectorAll(".mat-mdc-card-content .mat-mdc-tooltip-trigger")[3].querySelector("span").innerText;
-        var cardDate = stringDate;
+        var cardDate = dateString;
 
-        await sleep(500);
+        while(true){
+            var statusConsulta = document.querySelectorAll(".preview-row")[2].querySelector(".mat-select-trigger");
+            if(await verifyIsItem(cardName)){
+                break;
+            }
+            
+            await sleep(10);
+        }
 
-        document.querySelectorAll(".preview-row")[2].querySelector(".mat-select-trigger").click();
-
-        await sleep(500);
+        statusConsulta.click();
         
-        document.querySelectorAll(".mat-select-panel .mat-option-text")[7].click();
+        while(true){
+            statusConsultaItem = document.querySelectorAll(".mat-select-panel .mat-option-text")[7];
+            if(await verifyIsItem(cardName)){
+                break;
+            }
+            
+            await sleep(10);
+        }
+
+        statusConsultaItem.click();
 
         await sleep(500);
+
         background.click();
+
         if(!await sendWhatsapp(cardName, cardPhone, cardDr, cardHour, cardDate)){
             
         }
@@ -172,9 +234,9 @@ async function confirmation(){
     console.log("FINALIZOU AS MENSAGENS");
 }
 
-async function sendWhatsapp(cardName, cardPhone, cardDr, cardHour){
+async function sendWhatsapp(cardName, cardPhone, cardDr, cardHour, cardDate){
     return new Promise((resolve, reject) => {
-        chrome.runtime.sendMessage({action: "forWhatsapp", name: cardName, phone: cardPhone, dr: cardDr, hour: cardHour}, (response) => {
+        chrome.runtime.sendMessage({action: "forWhatsapp", name: cardName, phone: cardPhone, dr: cardDr, hour: cardHour, date: cardDate}, (response) => {
             if(response.success){
                 resolve(true);
             }else{
