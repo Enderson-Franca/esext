@@ -4,13 +4,14 @@ var messages;
 
 chrome.storage.local.get("init", (result) => {
     console.log(result["init"]);
-    console.log("TESTEEEE");
 });
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if(message["configs"]["configs"] !== undefined && message["configs"]["messages"] !== undefined){
-        configs = message["configs"]["configs"];
-        messages = message["configs"]["messages"];
+    if(message["configs"] !== undefined){
+        if(message["configs"]["configs"] !== undefined && message["configs"]["messages"] !== undefined){
+            configs = message["configs"]["configs"];
+            messages = message["configs"]["messages"];
+        }
     }
 
     switch(message.action){
@@ -33,9 +34,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             });
         break;
         case "forWhatsapp":
+            console.log("FOR WHATSAAO");
             var id;
-            chrome.tabs.create({url: linkBase}, (tab) => {
-                console.log(tab);
+            chrome.tabs.create({url: "https://web.whatsapp.com/send?phone=55610000000&text=Vejamos......"}, (tab) => {
                 id = tab;
             });
 

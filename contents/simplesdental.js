@@ -1,8 +1,9 @@
 const now = new Date();
 
-const day = now.getDate();
-const month = now.getMonth() + 1;
+var day;
+var month;
 const year = now.getFullYear();
+var dateString;
 
 
 function sleep(ms) {
@@ -28,7 +29,7 @@ function sleep(ms) {
         }
     }
 
-    await sleep(8000);
+    await sleep(2000);
 
     if(profissionalText !== "Todos os profissionais"){
         profissional.click();
@@ -41,9 +42,6 @@ function sleep(ms) {
                 console.log("finalizou");
                 break;
             }
-        
-            console.log("zaa");
-
             await sleep(200);
         }
         await sleep(1000);
@@ -101,12 +99,22 @@ function sleep(ms) {
     }
     */
 
+    /*formatar data antes de enviar*/
+
+    day = document.querySelector(".header-agenda-group span:nth-child(1)").innerText.trim();
+    day = String(day).padStart(2, "0");
+    month = document.querySelector(".header-agenda-group span:nth-child(2)").innerText.trim();
+    month = month.replace("/", "");
+    month = String(month).padStart(2, "0");
+
+    dateString = `${day}/${month}/${year}`;
+
     confirmation();
 })();
 
 async function confirmation(){
     await sleep(4000);
-    var allHours = document.querySelectorAll(".fc-event-draggable");
+    var allHours = document.querySelectorAll("[data-consulta-id]");
     console.log(allHours);
     for(let element of allHours){
         
@@ -134,6 +142,7 @@ async function confirmation(){
         }
         
         element.click();
+        console.log(element);
 
         var background = document.querySelector(".preview-backdrop");
 
@@ -143,6 +152,7 @@ async function confirmation(){
         var cardPhone = document.querySelector(".mat-mdc-card-header-text .mat-mdc-card-subtitle").innerText;
         var cardDr = document.querySelectorAll(".mat-mdc-card-content .mat-mdc-tooltip-trigger")[0].innerText;
         var cardHour = document.querySelectorAll(".mat-mdc-card-content .mat-mdc-tooltip-trigger")[3].querySelector("span").innerText;
+        var cardDate = stringDate;
 
         await sleep(500);
 
@@ -154,7 +164,9 @@ async function confirmation(){
 
         await sleep(500);
         background.click();
-        await sendWhatsapp(cardName, cardPhone, cardDr, cardHour);
+        if(!await sendWhatsapp(cardName, cardPhone, cardDr, cardHour, cardDate)){
+            
+        }
     }
 
     console.log("FINALIZOU AS MENSAGENS");
@@ -164,7 +176,9 @@ async function sendWhatsapp(cardName, cardPhone, cardDr, cardHour){
     return new Promise((resolve, reject) => {
         chrome.runtime.sendMessage({action: "forWhatsapp", name: cardName, phone: cardPhone, dr: cardDr, hour: cardHour}, (response) => {
             if(response.success){
-                resolve();
+                resolve(true);
+            }else{
+                resolve(false);
             }
         });
     });
