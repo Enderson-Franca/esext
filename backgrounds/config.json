@@ -1,21 +1,23 @@
 {
     "configs": {
-        "url_simples-dental": "https://app.simplesdental.com/simples/agenda"
+        "url_simples-dental": "https://app.simplesdental.com/simples/agenda",
+        "phone_clinical": "61985560944",
+        "phone_orto": "61992298575"
     },
 
     "messages": {
         "confirmations": {
-            "clinical": "Bom dia {name}, é daqui da clínica Espaço Sorriso! O motivo do contato é para confirmar sua consulta com o(a) {dr} {amanha} dia {data} às {hour}? ⚠ Observações * A tolerância de atrasos é de 10 minutos. * Caso não compareça e não desmarque com 2 horas de antecedência sera gerada uma multa no valor de 20,00. (pois há reserva de horarios) *Aguardamos o seu retorno até 11:00, caso não seja confirmado destinaremos o horário para outro paciente. SUA CONFIRMAÇÃO É DE EXTREMA IMPORTÂNCIA!",
+            "clinical": "{greeting}, {name}. É da clínica Espaço Sorriso! Posso estar confirmando a sua consulta {amanha} dia {data}, às {hour}?\n\n*📝Informações*\n\n`🦷 Doutor(a): {dr}`\n`🗓️ Data: {data}`\n`🕓 Horário: {hour}`\n\n*⚠️ Observações*\n\n- A tolerância de atraso é de 10 minutos. Caso não compareça e não desmarque com 2 horas de antecedência, será gerada uma multa no valor de R$20,00(Pois há reserva de horários);\n\n- Aguardamos a sua confirmação até às 14h;\n\n- Caso não haja confirmação do horário, destinaremos o horário para outro paciente.\n\n> A SUA CONFIRMAÇÃO É DE EXTREMA IMPORTÂNCIA! ✅",
 
-            "orthodontics": "Bom dia {name}, é daqui da clínica Espaço Sorriso, podemos confirmar a sua manutenção para {amanha} dia {data} às {hour}? ⚠ Observações: *** A tolerância de atrasos é de 10 minutos. *** Caso não compareça e não desmarque com 2 horas de antecedência será gerada uma multa no valor de 20,00. (pois há reserva de horarios). Caso não compareça na manutenção dentro do mês é gerada uma multa no valor da manutenção (R$ 90,00), caso seja paciente de convênio desconsiderar. SUA CONFIRMAÇÃO É DE EXTREMA IMPORTÂNCIA!! OBS. PAGAMENTO DA MANUTENÇÃO APENAS DINHEIRO OU PIX",
+            "orthodontics": "Bom dia {name}, é daqui da clínica Espaço Sorriso, podemos confirmar a sua manutenção {amanha} dia {data} às {hour}? ⚠ Observações: *** A tolerância de atrasos é de 10 minutos. *** Caso não compareça e não desmarque com 2 horas de antecedência será gerada uma multa no valor de 20,00. (pois há reserva de horarios). Caso não compareça na manutenção dentro do mês é gerada uma multa no valor da manutenção (R$ 90,00), caso seja paciente de convênio desconsiderar. SUA CONFIRMAÇÃO É DE EXTREMA IMPORTÂNCIA!! OBS. PAGAMENTO DA MANUTENÇÃO APENAS DINHEIRO OU PIX",
 
             "today": "Olá {name}, é daqui da clínica Espaço Sorriso! Estou entrando em contato para confirmar a sua presença na sua consulta de HOJE às {hour}."
         },
 
-        "cancellation": {
-            "clinical": "Clínico",
+        "cancellations": {
+            "clinical": "Cancelamento Clínico",
 
-            "orthodontics": "Ortodontico"
+            "orthodontics": "Cancelamento Ortodontico"
         }
     }
 }

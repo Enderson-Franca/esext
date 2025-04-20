@@ -8,6 +8,14 @@ var loading = document.querySelector(".loading");
 var btnConfirm = document.querySelector(".btn-confirm input");
 var btnCancel = document.querySelector(".btn-cancel input");
 
+/*Inputs*/
+
+var inputConfirmation = document.querySelectorAll(".actions__values")[0];
+var inputType = document.querySelectorAll(".actions__values")[1];
+var inputDoctor = document.querySelectorAll(".actions__values")[2];
+var inputDate = document.querySelectorAll(".actions__values")[3];
+var inputMessage = document.querySelectorAll(".actions__values")[4];
+
 /*set close interface*/
 
 interfaceConfig.classList.add("close-interface");
@@ -46,23 +54,47 @@ window.addEventListener("load", async () => {
     });
 });
 
-btnConfirm.addEventListener("click", () => {
-    console.log(document.querySelectorAll(".actions__values"));
-    informations["confirmation"] = document.querySelectorAll(".actions__values")[0].value;
-    informations["type"] = document.querySelectorAll(".actions__values")[1].value;
-    informations["doctor"] = document.querySelectorAll(".actions__values")[2].value;
-    informations["date"] = document.querySelectorAll(".actions__values")[3].value;
-    informations["message"] = document.querySelectorAll(".actions__values")[4].value;
+//Validação inputs
 
-    chrome.storage.local.set({informations: informations});
-
-    interfaceConfig.classList.add("close-interface");
-    loading.classList.remove("close-interface");
-    chrome.storage.local.set({init: true});
-    chrome.runtime.sendMessage({action: "execute", configs: configs}, (response) => {
-        console.log(response);
-    });
+inputConfirmation.addEventListener("change", () => {
+    if(inputType.value !== "Selecione"){
+        var confirmation = inputConfirmation.value === "true" ? "confirmations" : "cancellations";
+        inputMessage.value = configs["messages"][confirmation][inputType.value];
+    }
 });
+
+inputType.addEventListener("change", () => {
+    var confirmation = inputConfirmation.value === "true" ? "confirmations" : "cancellations";
+    console.log(configs);
+    inputMessage.value = configs["messages"][confirmation][inputType.value];
+});
+
+//Iniciar confirmação
+
+btnConfirm.addEventListener("click", () => {
+    if(inputType.value !== "Selecione"){
+        console.log(document.querySelectorAll(".actions__values"));
+        informations["confirmation"] = inputConfirmation.value;
+        informations["type"] = inputType.value;
+        informations["doctor"] = inputDoctor.value;
+        informations["date"] = inputDate.value;
+        informations["message"] = inputMessage.value;
+
+        chrome.storage.local.set({informations: informations});
+
+        interfaceConfig.classList.add("close-interface");
+        loading.classList.remove("close-interface");
+        chrome.storage.local.set({init: true});
+        chrome.runtime.sendMessage({action: "execute", settings: configs}, (response) => {
+            console.log(response);
+        });
+    }else{
+        alert("É necessário preencher todos os campos para iniciar a confirmação.");
+    }
+    
+});
+
+//Cancelar confirmação
 
 btnCancel.addEventListener("click", () => {
     interfaceConfig.classList.remove("close-interface");
@@ -70,11 +102,22 @@ btnCancel.addEventListener("click", () => {
     chrome.storage.local.set({init: false});
 });
 
+/*Setar data para amanhã*/
+
+var tomorrow = new Date();
+var tmDay = tomorrow.getDate() + 1;
+tmDay = String(tmDay).padStart(2, "0");
+var tmMonth = tomorrow.getMonth() + 1;
+tmMonth = String(tmMonth).padStart(2, "0");
+var tmYear = tomorrow.getFullYear();
+
+var tmFormat = `${tmYear}-${tmMonth}-${tmDay}`;
+
+inputDate.value = tmFormat;
+
 /*Setar data mínima em input*/
 
-var inputDate = document.querySelectorAll(".actions__values")[3];
 const now = new Date();
-
 const day = now.getDate();
 const month = now.getMonth() + 1;
 const year = now.getFullYear();
@@ -86,26 +129,3 @@ dateBase = dateBase.replace("{year}", year)
 .replace("{day}", String(day).padStart(2, "0"));
 
 inputDate.min = dateBase;
-
-/*
-
-btnConfirm.addEventListener("click", async () => {
-    chrome.storage.local.set({init: true}, () => {
-        confirm.style.display = "none";
-        loading.style.display = "flex";
-        chrome.runtime.sendMessage({action: "log", message: "Confirmação de pacientes iniciada."});
-    });
-
-    chrome.runtime.sendMessage({ action: "execute" }, (response) => {
-        console.log("Resposta do background:", response);
-    });
-});
-
-btnCancel.addEventListener("click", () => {
-    chrome.runtime.onSuspend.addListener(function() {
-        // Código para finalizar processos ou encerrar operações
-        console.log("Extensão suspensa!");
-    });
-});
-
-*/

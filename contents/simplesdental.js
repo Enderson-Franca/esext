@@ -1,3 +1,19 @@
+console.log("Script injetado na simples dental");
+
+
+var elementHtml = document.createElement("div");
+elementHtml.style = "position: fixed; top: 0px; left: 0px; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 999999999999;";
+
+elementHtmlText = document.createElement("span");
+elementHtmlText.innerText = "Confirmando pacientes, aguarde!";
+elementHtmlText.style = "color: white; font-size: 3em; font-weight: bold;";
+
+elementHtml.appendChild(elementHtmlText);
+document.body.appendChild(elementHtml);
+
+var patientsIncorrects = [];
+var informations;
+
 const now = new Date();
 
 var day;
@@ -32,29 +48,27 @@ function verifyIsList(list){
         if(await verifyIsItem(profissional)){
             break;
         }
-        
         await sleep(10);
     }
     
     var profissionalText = profissional.innerText.trim();
-
+    
     if(profissionalText !== "Todos os profissionais"){
         profissional.click();
-
+        
         while(true){
             var optionClick = document.querySelectorAll(".mat-option-text");
             if(await verifyIsList(optionClick)){
                 await sleep(500);
                 optionClick[0].click();
-                console.log("finalizou");
                 break;
             }
             await sleep(200);
         }
-
+        
         await sleep(1000);
     }
-
+    
     
     while(true){
         var cadeira = document.querySelector(".ng-tns-c3082329526-8");
@@ -67,7 +81,7 @@ function verifyIsList(list){
     
     
     var cadeiraText = cadeira.innerText.trim();
-
+    
     if(cadeiraText !== "Todas as cadeiras"){
         cadeira.click();
         while(true){
@@ -78,12 +92,12 @@ function verifyIsList(list){
                 console.log("finalizou");
                 break;
             }
-
+            
             await sleep(200);
         }
         await sleep(1000);
     }
-
+    
     while(true){
         var type = document.querySelector(".ng-tns-c3082329526-3");
         if(await verifyIsItem(type)){
@@ -95,7 +109,7 @@ function verifyIsList(list){
     
     
     var typeText = document.querySelector(".ng-tns-c3082329526-3").innerText.trim();
-
+    
     if(typeText !== "Dia"){
         type.click();
         while(true){
@@ -106,44 +120,74 @@ function verifyIsList(list){
                 console.log("finalizou");
                 break;
             }
-
+            
             await sleep(200);
         }
         await sleep(1000);
     }
-
-
-    /*Navegar entre os dias até a data escolhida*/
-    /*
+    
+    //Navegar entre os dias até a data escolhida
+    
     var nextDayBtn = document.querySelector("[data-testid='btnProximoPeriodo']");
     
     while(true){
-        var daySimples = document.querySelector(".header-agenda-group span:nth-child(1)").innerText.trim();
-        if(daySimples == 25){
+        var daySimples = document.querySelector(".header-agenda-group span:nth-child(1)");
+        if(await verifyIsItem(daySimples)){
+            break;
+        }
+        
+        await sleep(10);
+    }
+
+    informations = await chrome.storage.local.get("informations");
+    informations = informations["informations"];
+    var dateForm = informations["date"];
+    dateForm = dateForm.split("-");
+    dateForm = {
+        day: dateForm[2],
+        month: dateForm[1],
+        year: dateForm[0]
+    };
+    var daySelected = new Date(dateForm.year, dateForm.month - 1, dateForm.day);
+    daySelected = daySelected.getDate();
+
+    while(true){
+        daySimples = document.querySelector(".header-agenda-group span:nth-child(1)");
+        var daySimplesValue = daySimples.innerText.trim();
+        if(daySimplesValue == daySelected){
             console.log("Dia correto");
             break;
         }else{
             nextDayBtn.click();
-            console.log(daySimples);
+            console.log(daySimplesValue);
         }
+        
         await sleep(200);
     }
-    */
+           
+    //formatar data antes de enviar
 
-    /*formatar data antes de enviar*/
-
-    day = document.querySelector(".header-agenda-group span:nth-child(1)").innerText.trim();
+    while(true){
+        day = document.querySelector(".header-agenda-group span:nth-child(1)");
+        if(await verifyIsItem(day)){
+            break;
+        }
+        
+        await sleep(10);
+    }
+    
+    day = day.innerText.trim();
     day = String(day).padStart(2, "0");
     month = document.querySelector(".header-agenda-group span:nth-child(2)").innerText.trim();
     month = month.replace("/", "");
     month = String(month).padStart(2, "0");
-
+    
     dateString = `${day}/${month}/${year}`;
-
     confirmation();
 })();
 
 async function confirmation(){
+    console.log("confirmation");
     
     while(true){
         var allHours = document.querySelectorAll("[data-consulta-id]");
@@ -227,11 +271,14 @@ async function confirmation(){
         background.click();
 
         if(!await sendWhatsapp(cardName, cardPhone, cardDr, cardHour, cardDate)){
-            
+            patientsIncorrects.push(cardName);
         }
     }
 
-    console.log("FINALIZOU AS MENSAGENS");
+    chrome.storage.local.set({init: false});
+    chrome.runtime.sendMessage({action: "log", message: "Confirmação finalizada com sucesso!"});
+    chrome.runtime.sendMessage({action: "log", message: patientsIncorrects});
+    elementHtmlText.innerText = "FINALIZADO."; 
 }
 
 async function sendWhatsapp(cardName, cardPhone, cardDr, cardHour, cardDate){
