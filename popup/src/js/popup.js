@@ -103,6 +103,14 @@ btnCancel.addEventListener("click", () => {
     interfaceConfig.classList.remove("close-interface");
     loading.classList.add("close-interface");
     chrome.storage.local.set({init: false});
+
+    chrome.storage.local.get("simplesId", (item) => {
+        chrome.tabs.remove(item["simplesId"]);
+    });
+
+    chrome.storage.local.get("whatsappTabId", (result) => {
+        chrome.tabs.remove(result["whatsappTabId"]);
+    });
 });
 
 /*Setar data para amanhã*/

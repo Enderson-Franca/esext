@@ -203,7 +203,7 @@ async function confirmation(){
 
     while(true){
         var allHours = document.querySelectorAll("[data-consulta-id]");
-        if(await verifyIsList(allHours)){
+        if(verifyIsList(allHours)){
             break;
         }
         await sleep(10);
@@ -235,7 +235,7 @@ async function confirmation(){
 
         while(true){
             var cardName = document.querySelector(".mat-mdc-card-header-text .mat-mdc-tooltip-trigger");
-            if(await verifyIsItem(cardName)){
+            if(verifyIsItem(cardName)){
                 break;
             }
             await sleep(10);
@@ -245,7 +245,7 @@ async function confirmation(){
 
         while(true){
             var cardPhone = document.querySelector(".mat-mdc-card-header-text .mat-mdc-card-subtitle");
-            if(await verifyIsItem(cardPhone)){
+            if(verifyIsItem(cardPhone)){
                 break;
             }
             await sleep(10);
@@ -255,7 +255,7 @@ async function confirmation(){
 
         while(true){
             var cardDr = document.querySelectorAll(".mat-mdc-card-content .mat-mdc-tooltip-trigger")[0];
-            if(await verifyIsItem(cardDr)){
+            if(verifyIsItem(cardDr)){
                 break;
             }
             await sleep(10);
@@ -265,7 +265,7 @@ async function confirmation(){
 
         while(true){
             var cardHour = document.querySelectorAll(".mat-mdc-card-content .mat-mdc-tooltip-trigger")[3].querySelector("span");
-            if(await verifyIsItem(cardHour)){
+            if(verifyIsItem(cardHour)){
                 break;
             }
             await sleep(10);
@@ -277,7 +277,7 @@ async function confirmation(){
 
         while(true){
             var statusConsulta = document.querySelectorAll(".preview-row")[2].querySelector(".mat-select-trigger");
-            if(await verifyIsItem(cardName)){
+            if(verifyIsItem(cardName)){
                 break;
             }
             await sleep(10);
@@ -287,7 +287,7 @@ async function confirmation(){
         
         while(true){
             statusConsultaItem = document.querySelectorAll(".mat-select-panel .mat-option-text")[7];
-            if(await verifyIsItem(cardName)){
+            if(verifyIsItem(cardName)){
                 break;
             }
             await sleep(10);
