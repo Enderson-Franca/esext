@@ -16,14 +16,14 @@ var inputDoctor = document.querySelectorAll(".actions__values")[2];
 var inputDate = document.querySelectorAll(".actions__values")[3];
 var inputMessage = document.querySelectorAll(".actions__values")[4];
 
+/*Mensagens pré formatadas*/
+
+var settings;
+
 /*set close interface*/
 
 interfaceConfig.classList.add("close-interface");
 loading.classList.add("close-interface");
-
-/*Mensagens pré formatadas*/
-
-var configs;
 
 /*Valores do formulário*/
 
@@ -38,9 +38,14 @@ var informations = {
 /*load interface*/
 
 window.addEventListener("load", async () => {
+    //Obter dados do arquivo JSON com informações pré formatadas
     var request = await fetch(chrome.runtime.getURL("backgrounds/config.json"));
     var result = await request.json();
-    configs = result;
+    chrome.storage.local.set({settings: result});
+    settings = await chrome.storage.local.get("settings");
+    settings = settings["settings"];
+
+    //Iniciar interface de acordo com o estado da requisção
 
     chrome.storage.local.get("init", (result) => {
         console.log(result["init"]);
@@ -59,21 +64,20 @@ window.addEventListener("load", async () => {
 inputConfirmation.addEventListener("change", () => {
     if(inputType.value !== "Selecione"){
         var confirmation = inputConfirmation.value === "true" ? "confirmations" : "cancellations";
-        inputMessage.value = configs["messages"][confirmation][inputType.value];
+        inputMessage.value = settings["messages"][confirmation][inputType.value];
     }
 });
 
 inputType.addEventListener("change", () => {
     var confirmation = inputConfirmation.value === "true" ? "confirmations" : "cancellations";
-    console.log(configs);
-    inputMessage.value = configs["messages"][confirmation][inputType.value];
+    console.log(settings);
+    inputMessage.value = settings["messages"][confirmation][inputType.value];
 });
 
 //Iniciar confirmação
 
 btnConfirm.addEventListener("click", () => {
     if(inputType.value !== "Selecione"){
-        console.log(document.querySelectorAll(".actions__values"));
         informations["confirmation"] = inputConfirmation.value;
         informations["type"] = inputType.value;
         informations["doctor"] = inputDoctor.value;
@@ -84,14 +88,15 @@ btnConfirm.addEventListener("click", () => {
 
         interfaceConfig.classList.add("close-interface");
         loading.classList.remove("close-interface");
+
         chrome.storage.local.set({init: true});
-        chrome.runtime.sendMessage({action: "execute", settings: configs}, (response) => {
+
+        chrome.runtime.sendMessage({action: "execute"}, response => {
             console.log(response);
         });
     }else{
         alert("É necessário preencher todos os campos para iniciar a confirmação.");
     }
-    
 });
 
 //Cancelar confirmação

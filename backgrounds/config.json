@@ -1,7 +1,7 @@
 {
     "configs": {
         "url_simples-dental": "https://app.simplesdental.com/simples/agenda",
-        "phone_clinical": "61985560944",
+        "phone_clinical": "61991661398",
         "phone_orto": "61992298575"
     },
 
@@ -18,6 +18,8 @@
             "clinical": "Cancelamento Clínico",
 
             "orthodontics": "Cancelamento Ortodontico"
-        }
+        },
+
+        "report": "*⚠ Pacientes com telefone incorreto ⚠*{patients}\n\n> Faça as correções para que nas próximas confirmações as mensagens de confirmação sejam enviadas."
     }
 }
