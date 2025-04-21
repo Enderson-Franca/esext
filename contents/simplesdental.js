@@ -301,9 +301,10 @@ async function confirmation(){
         background.click();
 
         if(!await sendWhatsapp(cardName, cardPhone, cardDr, cardHour, cardDate)){
+            cardPhone = cardPhone.replace("+55", "");
             patientsIncorrects.push({
                 name: cardName,
-                phone: cardPhone
+                phone: cardPhone.replace(/\D/g, "")
             });
         }
 

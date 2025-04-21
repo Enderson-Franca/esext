@@ -91,9 +91,7 @@ btnConfirm.addEventListener("click", () => {
 
         chrome.storage.local.set({init: true});
 
-        chrome.runtime.sendMessage({action: "execute"}, response => {
-            console.log(response);
-        });
+        chrome.runtime.sendMessage({action: "execute"});
     }else{
         alert("É necessário preencher todos os campos para iniciar a confirmação.");
     }

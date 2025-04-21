@@ -2,34 +2,38 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    (async () => {
-        var settings = await chrome.storage.local.get("settings");
-        settings = settings["settings"];
-        
-        var informations = await chrome.storage.local.get("informations");
-        informations = informations["informations"];
-        switch(message.action){
-            case "execute":
-                chrome.tabs.create({url: settings["configs"]["url_simples-dental"]}, async (tabCreate) => {
-                    await chrome.storage.local.set({simplesId: tabCreate.id});
-                
-                    chrome.tabs.onUpdated.addListener(async function listener(tabId, tabInfo, tab){
-                        if(tabId == tabCreate.id && tabInfo.status == "complete"){
-                            await chrome.scripting.executeScript({
-                                target: {tabId: tabCreate.id},
-                                files: ["contents/simplesdental.js"]
-                            });
-                            chrome.tabs.onUpdated.removeListener(listener);
-                            chrome.tabs.sendMessage(tabCreate.id, {action: "confirmation"});
-                            sendResponse({success: true});
-                        }
-                    });
+var settings;
 
-                });
-            break;
-            case "forWhatsapp":
-                sendResponse({success: true});
+chrome.storage.local.get("settings", (item) => {
+    settings = item["settings"];
+});
+
+var informations;
+
+chrome.storage.local.get("informations", (item) => {
+    informations = item["informations"];
+});
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    switch(message.action){
+        case "execute":
+        chrome.tabs.create({url: settings["configs"]["url_simples-dental"]}, async (tabCreate) => {
+            await chrome.storage.local.set({simplesId: tabCreate.id});
+        
+            chrome.tabs.onUpdated.addListener(async function listener(tabId, tabInfo, tab){
+                if(tabId == tabCreate.id && tabInfo.status == "complete"){
+                    await chrome.scripting.executeScript({
+                        target: {tabId: tabCreate.id},
+                        files: ["contents/simplesdental.js"]
+                    });
+                    chrome.tabs.onUpdated.removeListener(listener);
+                    chrome.tabs.sendMessage(tabCreate.id, {action: "confirmation"});
+                }
+            });
+
+        });
+        break;
+        case "forWhatsapp":
                 (async () => {
                     //Dados vindos do formulário
                     var type = informations["type"];
@@ -109,11 +113,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                     }
 
                     messageBase = encodeURIComponent(messageBase);
-                    console.log(messageBase);
 
                     var linkBase = `https://web.whatsapp.com/send?phone=${phone}&text=${messageBase}`;
-
-                    sendResponse({success: true});
                     
                     chrome.tabs.create({url: linkBase}, (tabCreate) => {
                         chrome.tabs.onUpdated.addListener(function listener(tabId, changeInfo){
@@ -123,8 +124,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                                     files: ["contents/whatsapp.js"]
                                 }).then(() => {
                                     chrome.tabs.sendMessage(tabId, {action: "send"}, (response) => {
-                                        console.log("RESPOSTA DO WHATSAAP PARA O BG");
-                                        console.log(response);
                                         sendResponse(response);
                                         chrome.storage.local.get("whatsappTabId", (result) => {
                                             chrome.tabs.remove(result["whatsappTabId"]);
@@ -137,54 +136,55 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                         });
                     });
                 })();
+                return true;
             break;
             case "report":
-                var patients = message.patients;
-                var messageBase = settings["messages"]["report"];
-                var stringBase = "";
-                var id;
+                (async () => {
+                    var patients = message.patients;
+                    var messageBase = settings["messages"]["report"];
+                    var stringBase = "";
+                    var id;
 
-                console.log(messageBase);
-                console.log(patients);
+                    console.log(messageBase);
+                    console.log(patients);
 
-                for(let patient of patients){
-                    console.log(patient);
-                    stringBase += `\n\n- ${patient.name}\n> ${patient.phone}`;
-                }
+                    for(let patient of patients){
+                        console.log(patient);
+                        stringBase += `\n\n- ${patient.name}\n> ${patient.phone}`;
+                    }
 
-                messageBase = messageBase.replace("{patients}", stringBase);
-                messageBase = encodeURIComponent(messageBase);
+                    messageBase = messageBase.replace("{patients}", stringBase);
+                    messageBase = encodeURIComponent(messageBase);
 
-                var linkBase = `https://web.whatsapp.com/send?phone=${settings["configs"]['phone_clinical']}&text=${messageBase}`;
+                    var linkBase = `https://web.whatsapp.com/send?phone=${settings["configs"]['phone_clinical']}&text=${messageBase}`;
 
-                chrome.tabs.create({url: linkBase}, (tab) => {
-                    id = tab;
-                });
+                    chrome.tabs.create({url: linkBase}, (tab) => {
+                        id = tab;
+                    });
 
-                chrome.tabs.onUpdated.addListener(function listener(tabId, changeInfo){
-                    if(tabId == id.id && changeInfo.status == "complete"){
-                        chrome.scripting.executeScript({
-                            target: {tabId: id.id},
-                            files: ["contents/whatsapp.js"]
-                        }).then(() => {
-                            chrome.tabs.sendMessage(tabId, {action: "send"}, (response) => {
-                                sendResponse(response);
-                                chrome.storage.local.get("whatsappTabId", (result) => {
-                                    chrome.tabs.remove(result["whatsappTabId"]);
+                    chrome.tabs.onUpdated.addListener(function listener(tabId, changeInfo){
+                        if(tabId == id.id && changeInfo.status == "complete"){
+                            chrome.scripting.executeScript({
+                                target: {tabId: id.id},
+                                files: ["contents/whatsapp.js"]
+                            }).then(() => {
+                                chrome.tabs.sendMessage(tabId, {action: "send"}, (response) => {
+                                    sendResponse(response);
+                                    chrome.storage.local.get("whatsappTabId", (result) => {
+                                        chrome.tabs.remove(result["whatsappTabId"]);
+                                    });
                                 });
                             });
-                        });
 
-                        chrome.tabs.onUpdated.removeListener(listener);
-                        chrome.storage.local.set({whatsappTabId: id.id});
-                    }
-                });
+                            chrome.tabs.onUpdated.removeListener(listener);
+                            chrome.storage.local.set({whatsappTabId: id.id});
+                        }
+                    });
+                })();
+                return true;
             break;
             case "log":
                 console.log(message.message);
-                sendResponse({success: true});
             break;
-        }
-    })();
-    return true;
+    }
 });
