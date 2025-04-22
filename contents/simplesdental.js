@@ -322,7 +322,7 @@ async function confirmation(){
 
 async function sendWhatsapp(cardName, cardPhone, cardDr, cardHour, cardDate){
     return new Promise((resolve) => {
-        chrome.runtime.sendMessage({action: "forWhatsapp", name: cardName, phone: cardPhone, dr: cardDr, hour: cardHour, date: cardDate}, (response) => {
+        chrome.runtime.sendMessage({action: "forWhatsapp", informations: informations, name: cardName, phone: cardPhone, dr: cardDr, hour: cardHour, date: cardDate}, (response) => {
             console.log(response);
             if(response.success){
                 resolve(true);

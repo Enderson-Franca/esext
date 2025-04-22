@@ -85,6 +85,7 @@ btnConfirm.addEventListener("click", () => {
         informations["message"] = inputMessage.value;
 
         chrome.storage.local.set({informations: informations});
+        chrome.storage.local.set({settings: settings});
 
         interfaceConfig.classList.add("close-interface");
         loading.classList.remove("close-interface");
@@ -103,6 +104,8 @@ btnCancel.addEventListener("click", () => {
     interfaceConfig.classList.remove("close-interface");
     loading.classList.add("close-interface");
     chrome.storage.local.set({init: false});
+
+    chrome.storage.local.clear();
 
     chrome.storage.local.get("simplesId", (item) => {
         chrome.tabs.remove(item["simplesId"]);

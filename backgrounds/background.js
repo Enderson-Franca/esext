@@ -3,35 +3,38 @@ function sleep(ms) {
 }
 
 var settings;
-
-chrome.storage.local.get("settings", (item) => {
-    settings = item["settings"];
-});
-
 var informations;
 
-chrome.storage.local.get("informations", (item) => {
-    informations = item["informations"];
-});
+function getInfos(){
+    return new Promise(async resolve => {
+        settings = await chrome.storage.local.get("settings");
+        settings = settings["settings"];
+        informations = await chrome.storage.local.get("informations");
+        informations = informations["informations"];
+        resolve();
+    });
+}
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     switch(message.action){
         case "execute":
-        chrome.tabs.create({url: settings["configs"]["url_simples-dental"]}, async (tabCreate) => {
-            await chrome.storage.local.set({simplesId: tabCreate.id});
-        
-            chrome.tabs.onUpdated.addListener(async function listener(tabId, tabInfo, tab){
-                if(tabId == tabCreate.id && tabInfo.status == "complete"){
-                    await chrome.scripting.executeScript({
-                        target: {tabId: tabCreate.id},
-                        files: ["contents/simplesdental.js"]
+            (async () => {
+                await getInfos();
+                chrome.tabs.create({url: settings["configs"]["url_simples-dental"]}, async (tabCreate) => {
+                    await chrome.storage.local.set({simplesId: tabCreate.id});
+                
+                    chrome.tabs.onUpdated.addListener(async function listener(tabId, tabInfo, tab){
+                        if(tabId == tabCreate.id && tabInfo.status == "complete"){
+                            await chrome.scripting.executeScript({
+                                target: {tabId: tabCreate.id},
+                                files: ["contents/simplesdental.js"]
+                            });
+                            chrome.tabs.onUpdated.removeListener(listener);
+                            chrome.tabs.sendMessage(tabCreate.id, {action: "confirmation"});
+                        }
                     });
-                    chrome.tabs.onUpdated.removeListener(listener);
-                    chrome.tabs.sendMessage(tabCreate.id, {action: "confirmation"});
-                }
-            });
-
-        });
+                });
+            })();
         break;
         case "forWhatsapp":
                 (async () => {
